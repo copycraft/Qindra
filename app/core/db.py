@@ -1,18 +1,12 @@
 from sqlmodel import SQLModel, create_engine, Session
 import os
 
-POSTGRES_USER = os.getenv("POSTGRES_USER", "qindra")
-POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "qindra_pass")
-POSTGRES_DB = os.getenv("POSTGRES_DB", "qindra")
-POSTGRES_HOST = os.getenv("POSTGRES_HOST", "localhost")
-POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
-
-DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
+DATABASE_URL = os.getenv("QINDRA_DB", "sqlite:///./qindra.db")  # default SQLite, swap to postgres://user:pass@host/db
 
 engine = create_engine(DATABASE_URL, echo=True)
 
 def init_db():
-    from . import models
+    from ..core.models import User, Quiz, Question, GameSession, Player, Answer
     SQLModel.metadata.create_all(engine)
 
 def get_session():

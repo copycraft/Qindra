@@ -1,7 +1,6 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import List, Optional
 import uuid
-import json
 
 def gen_uuid():
     return str(uuid.uuid4())
@@ -18,11 +17,10 @@ class Quiz(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     title: str
     description: Optional[str] = None
-    owner_id: str = Field(foreign_key="user.id")  # Only the teacher who owns it
+    owner_id: str = Field(foreign_key="user.id")
     questions: List["Question"] = Relationship(back_populates="quiz")
-
-    owner: Optional[User] = Relationship(back_populates="quizzes")
     sessions: List["GameSession"] = Relationship(back_populates="quiz")
+    owner: Optional[User] = Relationship(back_populates="quizzes")
 
 class Question(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
@@ -39,10 +37,11 @@ class Question(SQLModel, table=True):
 class GameSession(SQLModel, table=True):
     id: str = Field(default_factory=gen_uuid, primary_key=True)
     quiz_id: int = Field(foreign_key="quiz.id")
-    status: str = "waiting"  # waiting, active, finished
+    status: str = "waiting"
     started_at: Optional[float] = None
     ended_at: Optional[float] = None
-    room_code: str = Field(default_factory=lambda: str(uuid.uuid4())[:6])  # 6-char code
+    room_code: str = Field(default_factory=lambda: str(uuid.uuid4())[:6])
+    current_question_index: int = -1
 
     quiz: Optional[Quiz] = Relationship(back_populates="sessions")
     players: List["Player"] = Relationship(back_populates="session")
@@ -61,7 +60,7 @@ class Answer(SQLModel, table=True):
     id: str = Field(default_factory=gen_uuid, primary_key=True)
     player_id: str = Field(foreign_key="player.id")
     question_id: int = Field(foreign_key="question.id")
-    selected: str  # JSON list of selected indices
+    selected: str
     received_at: float
     score: int
 
