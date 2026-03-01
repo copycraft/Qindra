@@ -4,7 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlmodel import Session
 from typing import List
 
-from app.core.db import get_session
+from app.core.db.db import get_session
 from app.core.auth import create_access_token, decode_access_token, verify_password
 from app.management import schemas, crud
 from app.core.models import User
